@@ -38,7 +38,7 @@ import {
 } from "@/src/components/ui/dialog";
 import { Label } from "@/src/components/ui/label";
 import { UserActions } from "@/src/components/users/user-actions";
-import { StatusBadge } from "@/src/components/users/stauts-badge";
+import { StatusBadge } from "@/src/components/users/status-badge";
 import { getInitials } from "@/src/lib/utils";
 
 // ---------- Types ----------

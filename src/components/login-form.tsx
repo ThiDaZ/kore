@@ -1,6 +1,7 @@
+/** biome-ignore-all lint/a11y/useValidAnchor: <explanation> */
 "use client";
 
-import { Hexagon } from "lucide-react";
+import { Hexagon, Loader } from "lucide-react";
 import { ModeToggle } from "@/src/components/mode-toggle";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -15,13 +16,13 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { useState } from "react";
-import { auth } from "../server/auth/auth";
 import { authClient } from "../server/auth/auth-client";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function LoginForm() {
 	const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-	const [loading, setLoading] = useState(false);
+	const [isLoading, setLoading] = useState(false);
 	const [loginFormData, setLoginFormData] = useState({ email: "", password: "" });
 	const [signupFormData, setSignupFormData] = useState({ name: "", email: "", password: "" });
 
@@ -37,7 +38,8 @@ export function LoginForm() {
 		});
 
 		if (error) {
-			console.log(error);
+			const errorMessage = typeof error === "string" ? error : error?.message || "Login failed";
+			toast.error(errorMessage);
 		} else {
 			router.push("/dashboard");
 		}
@@ -56,7 +58,8 @@ export function LoginForm() {
 		});
 
 		if (error) {
-			console.log(error);
+			const errorMessage = typeof error === "string" ? error : error?.message || "Sign up failed";
+			toast.error(errorMessage);
 		} else {
 			router.push("/dashboard");
 		}
@@ -82,11 +85,11 @@ export function LoginForm() {
 					className="w-full"
 					onValueChange={(v) => setActiveTab(v as "login" | "signup")}
 				>
-					<TabsList className="grid w-full grid-cols-2 shadow-sm rounded-xl mb-4">
-						<TabsTrigger value="login" className="rounded-lg">
+					<TabsList className="grid w-full grid-cols-2 shadow-sm rounded-xl mb-4 ">
+						<TabsTrigger value="login" className="rounded-lg" disabled={isLoading}>
 							Log in
 						</TabsTrigger>
-						<TabsTrigger value="signup" className="rounded-lg">
+						<TabsTrigger value="signup" className="rounded-lg " disabled={isLoading}>
 							Sign up
 						</TabsTrigger>
 					</TabsList>
@@ -138,9 +141,15 @@ export function LoginForm() {
 												}}
 											/>
 										</div>
-										<Button type="submit" className="w-full rounded-lg">
-											Log in
-										</Button>
+										{isLoading ? (
+											<Button type="submit" className="w-full rounded-lg disabled">
+												<Loader className="animate-spin" />
+											</Button>
+										) : (
+											<Button type="submit" className="w-full rounded-lg">
+												Log in
+											</Button>
+										)}
 									</div>
 								</form>
 							</CardContent>
@@ -168,7 +177,10 @@ export function LoginForm() {
 												placeholder="John Doe"
 												required
 												className="rounded-lg"
-												value={}
+												value={signupFormData.name}
+												onChange={(e) => {
+													setSignupFormData({ ...signupFormData, name: e.target.value });
+												}}
 											/>
 										</div>
 										<div className="grid gap-2">
@@ -179,15 +191,34 @@ export function LoginForm() {
 												placeholder="m@example.com"
 												required
 												className="rounded-lg"
+												value={signupFormData.email}
+												onChange={(e) => {
+													setSignupFormData({ ...signupFormData, email: e.target.value });
+												}}
 											/>
 										</div>
 										<div className="grid gap-2">
 											<Label htmlFor="signup-password">Password</Label>
-											<Input id="signup-password" type="password" required className="rounded-lg" />
+											<Input
+												id="signup-password"
+												type="password"
+												required
+												className="rounded-lg"
+												value={signupFormData.password}
+												onChange={(e) => {
+													setSignupFormData({ ...signupFormData, password: e.target.value });
+												}}
+											/>
 										</div>
-										<Button type="submit" className="w-full rounded-lg">
-											Sign up
-										</Button>
+										{isLoading ? (
+											<Button type="submit" className="w-full rounded-lg disabled">
+												<Loader className="animate-spin" />
+											</Button>
+										) : (
+											<Button type="submit" className="w-full rounded-lg">
+												Sign up
+											</Button>
+										)}
 									</div>
 								</form>
 							</CardContent>

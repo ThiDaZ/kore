@@ -5,11 +5,6 @@ import {
   Plus,
   Download,
   Search,
-  MoreHorizontal,
-  UserPen,
-  ShieldCheck,
-  Ban,
-  Trash2,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -25,13 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/src/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -49,6 +37,9 @@ import {
   DialogTrigger,
 } from "@/src/components/ui/dialog";
 import { Label } from "@/src/components/ui/label";
+import { UserActions } from "@/src/components/users/user-actions";
+import { StatusBadge } from "@/src/components/users/stauts-badge";
+import { getInitials } from "@/src/lib/utils";
 
 // ---------- Types ----------
 type Role = "Admin" | "Editor" | "Viewer";
@@ -119,29 +110,6 @@ const roleConfig: Record<Role, { className: string }> = {
   Viewer: { className: "bg-muted text-muted-foreground border-border" },
 };
 
-const statusConfig: Record<Status, { dotClassName: string; badgeClassName: string }> = {
-  Active: {
-    dotClassName: "bg-emerald-500",
-    badgeClassName: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-  },
-  Suspended: {
-    dotClassName: "bg-red-500",
-    badgeClassName: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
-  },
-  Invited: {
-    dotClassName: "bg-amber-500",
-    badgeClassName: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
-  },
-};
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-}
-
 // ---------- Sub‑components ----------
 function RoleBadge({ role }: { role: Role }) {
   const config = roleConfig[role];
@@ -149,48 +117,6 @@ function RoleBadge({ role }: { role: Role }) {
     <Badge variant="outline" className={config.className}>
       {role}
     </Badge>
-  );
-}
-
-function StatusBadge({ status }: { status: Status }) {
-  const config = statusConfig[status];
-  return (
-    <Badge variant="outline" className={config.badgeClassName}>
-      <span className={`size-1.5 rounded-full ${config.dotClassName}`} />
-      {status}
-    </Badge>
-  );
-}
-
-function UserActions() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm">
-          <MoreHorizontal className="size-4" />
-          <span className="sr-only">Open menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem>
-          <UserPen className="size-4" />
-          Edit Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <ShieldCheck className="size-4" />
-          Change Role
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <Ban className="size-4" />
-          Suspend User
-        </DropdownMenuItem>
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <Trash2 className="size-4" />
-          Delete User
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 
@@ -238,7 +164,7 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-6">
+    <div className="p-6 max-w-350 mx-auto space-y-6">
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -319,7 +245,7 @@ export default function UsersPage() {
         </div>
         <div className="flex items-center gap-2">
           <Select value={roleFilter} onValueChange={handleRoleFilter}>
-            <SelectTrigger size="sm" className="w-[130px]">
+            <SelectTrigger size="sm" className="w-32.5">
               <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>
@@ -331,7 +257,7 @@ export default function UsersPage() {
           </Select>
 
           <Select value={statusFilter} onValueChange={handleStatusFilter}>
-            <SelectTrigger size="sm" className="w-[140px]">
+            <SelectTrigger size="sm" className="w-35">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -353,7 +279,7 @@ export default function UsersPage() {
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Last Login</TableHead>
-              <TableHead className="w-[60px] text-right">Actions</TableHead>
+              <TableHead className="w-15 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

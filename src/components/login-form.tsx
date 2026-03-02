@@ -13,16 +13,56 @@ import {
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import {
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
-} from "@/src/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { useState } from "react";
+import { auth } from "../server/auth/auth";
+import { authClient } from "../server/auth/auth-client";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
 	const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+	const [loading, setLoading] = useState(false);
+	const [loginFormData, setLoginFormData] = useState({ email: "", password: "" });
+	const [signupFormData, setSignupFormData] = useState({ name: "", email: "", password: "" });
+
+	const router = useRouter();
+
+	const handleLogin = async (e: React.SubmitEvent) => {
+		e.preventDefault();
+		setLoading(true);
+
+		const { error } = await authClient.signIn.email({
+			email: loginFormData.email,
+			password: loginFormData.password,
+		});
+
+		if (error) {
+			console.log(error);
+		} else {
+			router.push("/dashboard");
+		}
+
+		setLoading(false);
+	};
+
+	const handleSignUp = async (e: React.SubmitEvent) => {
+		e.preventDefault();
+		setLoading(true);
+
+		const { error } = await authClient.signUp.email({
+			email: signupFormData.email,
+			name: signupFormData.name,
+			password: signupFormData.password,
+		});
+
+		if (error) {
+			console.log(error);
+		} else {
+			router.push("/dashboard");
+		}
+
+		setLoading(false);
+	};
 
 	return (
 		<>
@@ -58,12 +98,10 @@ export function LoginForm() {
 						<Card className="border-zinc-200 shadow-sm dark:border-zinc-800 rounded-xl overflow-hidden">
 							<CardHeader className="text-center pb-4">
 								<CardTitle className="text-xl">Welcome back</CardTitle>
-								<CardDescription>
-									Enter your email below to login to your account
-								</CardDescription>
+								<CardDescription>Enter your email below to login to your account</CardDescription>
 							</CardHeader>
 							<CardContent className="pb-4">
-								<form>
+								<form onSubmit={handleLogin}>
 									<div className="grid gap-4">
 										<div className="grid gap-2">
 											<Label htmlFor="email">Email</Label>
@@ -73,6 +111,10 @@ export function LoginForm() {
 												placeholder="m@example.com"
 												required
 												className="rounded-lg"
+												value={loginFormData.email}
+												onChange={(e) => {
+													setLoginFormData({ ...loginFormData, email: e.target.value });
+												}}
 											/>
 										</div>
 										<div className="grid gap-2">
@@ -90,6 +132,10 @@ export function LoginForm() {
 												type="password"
 												required
 												className="rounded-lg"
+												value={loginFormData.password}
+												onChange={(e) => {
+													setLoginFormData({ ...loginFormData, password: e.target.value });
+												}}
 											/>
 										</div>
 										<Button type="submit" className="w-full rounded-lg">
@@ -109,12 +155,10 @@ export function LoginForm() {
 						<Card className="border-zinc-200 shadow-sm dark:border-zinc-800 rounded-xl overflow-hidden">
 							<CardHeader className="text-center pb-4">
 								<CardTitle className="text-xl">Create an account</CardTitle>
-								<CardDescription>
-									Enter your details below to create your account
-								</CardDescription>
+								<CardDescription>Enter your details below to create your account</CardDescription>
 							</CardHeader>
 							<CardContent className="pb-4">
-								<form>
+								<form onSubmit={handleSignUp}>
 									<div className="grid gap-4">
 										<div className="grid gap-2">
 											<Label htmlFor="name">Full Name</Label>
@@ -124,6 +168,7 @@ export function LoginForm() {
 												placeholder="John Doe"
 												required
 												className="rounded-lg"
+												value={}
 											/>
 										</div>
 										<div className="grid gap-2">
@@ -138,12 +183,7 @@ export function LoginForm() {
 										</div>
 										<div className="grid gap-2">
 											<Label htmlFor="signup-password">Password</Label>
-											<Input
-												id="signup-password"
-												type="password"
-												required
-												className="rounded-lg"
-											/>
+											<Input id="signup-password" type="password" required className="rounded-lg" />
 										</div>
 										<Button type="submit" className="w-full rounded-lg">
 											Sign up
@@ -158,17 +198,11 @@ export function LoginForm() {
 
 				<div className="text-balance text-center text-xs text-zinc-500 dark:text-zinc-400">
 					By clicking continue, you agree to our{" "}
-					<a
-						href="#"
-						className="underline underline-offset-4 hover:text-primary"
-					>
+					<a href="#" className="underline underline-offset-4 hover:text-primary">
 						Terms of Service
 					</a>{" "}
 					and{" "}
-					<a
-						href="#"
-						className="underline underline-offset-4 hover:text-primary"
-					>
+					<a href="#" className="underline underline-offset-4 hover:text-primary">
 						Privacy Policy
 					</a>
 					.

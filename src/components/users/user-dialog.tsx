@@ -10,22 +10,51 @@ import {
 import { Input } from "../ui/input";
 import { SelectTrigger, SelectValue, SelectContent, SelectItem, Select } from "../ui/select";
 import { Label } from "../ui/label";
+import { trpc } from "../provider";
+import { useState } from "react";
 
 interface Props {
 	addDialogOpen: boolean;
 	setAddDialogOpen: (bool: boolean) => void;
 }
 
+type UserRole = "Admin" | "Editor" | "Viewer";
+
 export default function UserDialog({ addDialogOpen, setAddDialogOpen }: Props) {
+	const [email, setEmail] = useState("");
+	const [name, setName] = useState("");
+	const [role, setRole] = useState<UserRole>("Viewer");
+
+	const mutation = trpc.addUser.useMutation({
+
+		
+
+		onSuccess: (data) => {
+			console.log("Success!, Server returned:", data);
+			setAddDialogOpen(false);
+		},
+
+		onError: (error) => {
+			console.log("Mutation error:", error);
+		},
+
+		onSettled: () => {
+			console.log("Mutation finished.");
+		},
+	});
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		mutation.mutate({
+			email,
+			name,
+			role
+		});
+	};
+
 	return (
 		<>
 			<Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-				{/* <DialogTrigger asChild>
-					<Button size="sm">
-						<Plus className="size-4" />
-						Add New User
-					</Button>
-				</DialogTrigger> */}
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Add New User</DialogTitle>
@@ -36,15 +65,27 @@ export default function UserDialog({ addDialogOpen, setAddDialogOpen }: Props) {
 					<div className="grid gap-4 py-4">
 						<div className="grid gap-2">
 							<Label htmlFor="name">Full Name</Label>
-							<Input id="name" placeholder="e.g. Jane Smith" />
+							<Input
+								id="name"
+								type="text"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+								placeholder="e.g. Jane Smith"
+							/>
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="email">Email Address</Label>
-							<Input id="email" type="email" placeholder="jane@kore.io" />
+							<Input
+								id="email"
+								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								placeholder="jane@kore.io"
+							/>
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="role">Role</Label>
-							<Select defaultValue="Viewer">
+							<Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
 								<SelectTrigger>
 									<SelectValue placeholder="Select a role" />
 								</SelectTrigger>
@@ -60,7 +101,7 @@ export default function UserDialog({ addDialogOpen, setAddDialogOpen }: Props) {
 						<Button variant="outline" onClick={() => setAddDialogOpen(false)}>
 							Cancel
 						</Button>
-						<Button onClick={() => setAddDialogOpen(false)}>Send Invitation</Button>
+						<Button onClick={handleSubmit}>Send Invitation</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>

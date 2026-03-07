@@ -623,6 +623,17 @@ export default function UsersPage() {
 						<ChevronLeft className="size-4" />
 						Previous
 					</Button>
+					{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+						<Button
+							key={p}
+							variant={p === page ? "default" : "outline"}
+							size="sm"
+							className="w-9"
+							onClick={() => setPage(p)}
+						>
+							{p}
+						</Button>
+					))}
 					<Button
 						variant="outline"
 						size="sm"

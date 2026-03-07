@@ -21,20 +21,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/src/components/ui/select";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/src/components/ui/dialog";
-import { Label } from "@/src/components/ui/label";
 import { UserActions } from "@/src/components/users/user-actions";
 import { StatusBadge } from "@/src/components/users/status-badge";
 import { getInitials } from "@/src/lib/utils";
 import { trpc } from "@/src/components/provider";
+import UserDialog from "@/src/components/users/user-dialog";
 
 // ---------- Types ----------
 type Role = "Admin" | "Editor" | "Viewer";
@@ -515,51 +506,11 @@ export default function UsersPage() {
 						Export CSV
 					</Button>
 
-					<Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-						<DialogTrigger asChild>
-							<Button size="sm">
-								<Plus className="size-4" />
-								Add New User
-							</Button>
-						</DialogTrigger>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Add New User</DialogTitle>
-								<DialogDescription>
-									Invite a new team member to your workspace. They will receive an email invitation.
-								</DialogDescription>
-							</DialogHeader>
-							<div className="grid gap-4 py-4">
-								<div className="grid gap-2">
-									<Label htmlFor="name">Full Name</Label>
-									<Input id="name" placeholder="e.g. Jane Smith" />
-								</div>
-								<div className="grid gap-2">
-									<Label htmlFor="email">Email Address</Label>
-									<Input id="email" type="email" placeholder="jane@kore.io" />
-								</div>
-								<div className="grid gap-2">
-									<Label htmlFor="role">Role</Label>
-									<Select defaultValue="Viewer">
-										<SelectTrigger>
-											<SelectValue placeholder="Select a role" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="Admin">Admin</SelectItem>
-											<SelectItem value="Editor">Editor</SelectItem>
-											<SelectItem value="Viewer">Viewer</SelectItem>
-										</SelectContent>
-									</Select>
-								</div>
-							</div>
-							<DialogFooter>
-								<Button variant="outline" onClick={() => setAddDialogOpen(false)}>
-									Cancel
-								</Button>
-								<Button onClick={() => setAddDialogOpen(false)}>Send Invitation</Button>
-							</DialogFooter>
-						</DialogContent>
-					</Dialog>
+					<Button size="sm" onClick={()=> setAddDialogOpen(true)}>
+						<Plus className="size-4" />
+						Add New User
+					</Button>
+
 				</div>
 			</div>
 
@@ -672,6 +623,17 @@ export default function UsersPage() {
 						<ChevronLeft className="size-4" />
 						Previous
 					</Button>
+					{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+						<Button
+							key={p}
+							variant={p === page ? "default" : "outline"}
+							size="sm"
+							className="w-9"
+							onClick={() => setPage(p)}
+						>
+							{p}
+						</Button>
+					))}
 					<Button
 						variant="outline"
 						size="sm"
@@ -683,6 +645,8 @@ export default function UsersPage() {
 					</Button>
 				</div>
 			</div>
+
+			<UserDialog addDialogOpen={addDialogOpen} setAddDialogOpen={setAddDialogOpen}/>
 		</div>
 	);
 }

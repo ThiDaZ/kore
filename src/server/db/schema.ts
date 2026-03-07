@@ -1,7 +1,9 @@
 import * as t from "drizzle-orm/pg-core";
-import { pgTable } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
 // BETTER-AUTH TABLES (User Management)
+
+export const roleEnum = pgEnum("role", ["Admin", "Editor", "Viewer"]);
 
 export const user = pgTable("user", {
 	id: t.text("id").primaryKey(),
@@ -59,4 +61,11 @@ export const verification = pgTable("verification", {
 	expiresAt: t.timestamp("expires_at", { precision: 6, withTimezone: true }).notNull(),
 	createdAt: t.timestamp("created_at", { precision: 6, withTimezone: true }).notNull(),
 	updatedAt: t.timestamp("updated_at", { precision: 6, withTimezone: true }).notNull(),
+});
+
+export const profile = pgTable("profile", {
+	id: uuid("id").defaultRandom().primaryKey(),
+	name: t.text("name").notNull(),
+	role: roleEnum("role").default("Viewer").notNull(),
+	email: t.text("email").notNull(),
 });

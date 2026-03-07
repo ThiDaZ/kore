@@ -8,6 +8,13 @@
       "when": 1772390001958,
       "tag": "0000_cooing_revanche",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772880972367,
+      "tag": "0001_tan_harpoon",
+      "breakpoints": true
     }
   ]
 }
